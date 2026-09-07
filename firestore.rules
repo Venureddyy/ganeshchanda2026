@@ -1,0 +1,21 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Donations: anyone can read, but a write must carry the correct
+    // adminKey field — this must match ADMIN_PASSCODE in app.js.
+    match /donations/{donationId} {
+      allow read: if true;
+      allow create: if request.resource.data.adminKey == "ganpati2026";
+      // Deletes aren't allowed from the browser at all — a passcode check
+      // can't be trusted for delete requests. Remove a wrong entry from
+      // the Firebase console instead (see README).
+      allow delete: if false;
+    }
+
+    // Expenses: open to anyone with the link, as requested.
+    match /expenses/{expenseId} {
+      allow read, create, delete: if true;
+    }
+  }
+}
